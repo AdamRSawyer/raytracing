@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-
+#include "Color.h"
 
 namespace RT_UTILITIES {
 
@@ -13,7 +13,7 @@ namespace RT_UTILITIES {
         pixels: Array of RGB values from 0.0-1.0. The array should be of the size imageWidth * imageHeight * 3 (one value for each color channel)
                 the pixel order is written out in rows starting at the top left and ending at the bottom right pixel
     */
-    bool writePPM(std::string filePath, uint16_t imageWidth, uint16_t imageHeight, double *pixels)
+    bool writePPM(std::string filePath, uint16_t imageWidth, uint16_t imageHeight, Color *pixels)
     {
         std::ofstream f(filePath.c_str(), std::ios::out);
 
@@ -28,12 +28,8 @@ namespace RT_UTILITIES {
             {
                 for (int j = 0; j < imageWidth; ++j)
                 {
-                    uint64_t curRGB_Triplet = i * imageWidth * 3 + j * 3; 
-                    uint8_t r = static_cast<uint8_t>(pixels[curRGB_Triplet] * 255);
-                    uint8_t g = static_cast<uint8_t>(pixels[curRGB_Triplet + 1] * 255);
-                    uint8_t b = static_cast<uint8_t>(pixels[curRGB_Triplet + 2] * 255);
-
-                    f << (unsigned int)r << ' ' << (unsigned int)g << ' ' << (unsigned int)b << '\n';
+                    uint64_t curRGB_Triplet = i * imageWidth + j; 
+                    f << pixels[curRGB_Triplet] << '\n';
                 }
                 
             }

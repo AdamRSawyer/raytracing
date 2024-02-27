@@ -7,6 +7,7 @@ class Point3 : public Vec3
 {
 
     public:
+        Point3();
         Point3(double x, double y, double z);
         Point3(double p[3]);
         Point3(const Vec3 &vec)
@@ -46,6 +47,11 @@ class Point3 : public Vec3
 
 };
 
+Point3::Point3()
+{
+    this->v[0] = 0; this->v[1] = 0; this->v[2] = 0;
+}
+
 Point3::Point3(double x, double y, double z)
 {
     this->v[0] = x;
@@ -67,7 +73,7 @@ Point3::~Point3()
 
 inline std::ostream& operator<<(std::ostream &out, const Point3 &vec)
 {
-    out << vec[0] << ' ' << vec[1] << ' ' << vec[2];
+    return out << vec[0] << ' ' << vec[1] << ' ' << vec[2];
 }
 
 inline Point3 operator+(const Point3 &vec1, const Point3 &vec2)
@@ -117,6 +123,26 @@ inline Point3 cross(const Point3 &vec1, const Point3 &vec2)
 inline Point3 unit_vector(const Point3 &vec)
 {
     return Point3(vec.v[0], vec.v[1], vec.v[2]) / vec.magnitude();
+}
+
+inline Point3 operator+(const Vec3 &vec1, const Point3 &vec2)
+{
+    return Point3(vec1[0] + vec2[0], vec1[1] + vec2[1], vec1[2] + vec2[2]);
+}
+
+inline Point3 operator-(const Vec3 &vec1, const Point3 &vec2)
+{
+    return Point3(vec1[0] - vec2[0], vec1[1] - vec2[1], vec1[2] - vec2[2]);
+}
+
+inline Point3 operator+(const Point3 &vec1, const Vec3 &vec2)
+{
+    return vec2 + vec1;
+}
+
+inline Point3 operator-(const Point3 &vec1, const Vec3 &vec2)
+{
+    return Point3(vec1[0] - vec2[0], vec1[1] - vec2[1], vec1[2] - vec2[2]);
 }
 
 #endif

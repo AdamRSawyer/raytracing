@@ -8,6 +8,7 @@ class Color : public Vec3
     public:
         Color(double r, double g, double b);
         Color(double c[3]);
+        Color();
         ~Color();
 
     Color& operator+=(const Color &add_p)
@@ -52,13 +53,19 @@ Color::Color(double c[3])
 {
     memcpy(this->v, c, sizeof(double) * 3);
 }
+
+Color::Color()
+{
+    this->v[0] = 0; this->v[1] = 0; this->v[2] = 0;
+}
+
 Color::~Color()
 {
 }
 
 inline std::ostream& operator<<(std::ostream &out, const Color &vec)
 {
-    out << vec[0] << ' ' << vec[1] << ' ' << vec[2];
+    return out << static_cast<int>(255.99 * vec[0]) << ' ' << static_cast<int>(255.99 * vec[1]) << ' ' << static_cast<int>(255.99 * vec[2]);
 }
 
 inline Color operator+(const Color &vec1, const Color &vec2)

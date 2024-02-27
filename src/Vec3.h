@@ -11,7 +11,7 @@ class Vec3
 
         double v[3]; // Contains the coordinates of the vector
 
-        Vec3(){};
+        Vec3(){ this->v[0] = 0; this->v[1] = 0; this->v[2] = 0;}
 
         Vec3(double v_0, double v_1, double v_2)
         {
@@ -67,7 +67,7 @@ class Vec3
 
 inline std::ostream& operator<<(std::ostream &out, const Vec3 &vec)
 {
-    out << vec[0] << ' ' << vec[1] << ' ' << vec[2];
+    return out << vec[0] << ' ' << vec[1] << ' ' << vec[2];
 }
 
 inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
