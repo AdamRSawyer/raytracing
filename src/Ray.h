@@ -8,8 +8,8 @@ class Ray
 {
     public:
 
-        Ray(Point3 origin, Vec3 dir){ this->orig = origin; this->dir = unit_vector(dir); }
-        ~Ray();
+        Ray(const Point3& origin, const Vec3& dir){ this->orig = origin; this->dir = unit_vector(dir); }
+        ~Ray(){};
 
         Point3 at(double t) const { return orig + t*dir; }
 
