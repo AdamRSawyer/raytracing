@@ -91,6 +91,11 @@ inline Point3 operator*(const Point3 &vec1, const Point3 &vec2)
     return Point3(vec1[0] * vec2[0], vec1[1] * vec2[1], vec1[2] * vec2[2]);
 }
 
+inline Point3 operator*(const Vec3 &vec1, const Point3 &vec2)
+{
+    return Point3(vec1[0] * vec2[0], vec1[1] * vec2[1], vec1[2] * vec2[2]);
+}
+
 inline Point3 operator*(const double d, const Point3 &vec)
 {
     return Point3(d*vec[0], d*vec[1], d*vec[2]);
@@ -107,6 +112,12 @@ inline Point3 operator/(const Point3 &vec, const double d)
 }
 
 inline double dot(const Point3 &vec1, const Point3 &vec2)
+{
+    Point3 vecTemp = vec1 * vec2;
+    return vecTemp[0] + vecTemp[1] + vecTemp[2];
+}
+
+inline double dot(const Vec3 &vec1, const Point3 &vec2)
 {
     Point3 vecTemp = vec1 * vec2;
     return vecTemp[0] + vecTemp[1] + vecTemp[2];
