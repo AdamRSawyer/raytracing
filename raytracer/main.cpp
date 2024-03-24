@@ -3,14 +3,17 @@
 #define APPLE
 
 #include <iostream>
+#include <cmath>
 #include "Point3.h"
 #include "Color.h"
 #include "raytracer_Funcs.cpp"
 #include "Ray.h"
 
+
 void clearTerminal();
 void drawProgressBar(float percComplete);
 Color rayColor(const Ray& r);
+Color sphereIntersect(const Ray& r);
 
 int main()
 {
@@ -30,7 +33,7 @@ int main()
     Vec3 delta_u = viewPort_u / imageWidth;
     Vec3 delta_v = viewPort_v / imageHeight;
 
-    Point3 Q = cameraCenter + Vec3(0, 0, focalLength) - viewPort_u / 2 - viewPort_v / 2; // Upper left viewpoint corner
+    Point3 Q = cameraCenter + Vec3(0, 0, -focalLength) - viewPort_u / 2 - viewPort_v / 2; // Upper left viewpoint corner
     Point3 P_00 = Q + delta_u / 2 + delta_v / 2; // Top left pixel
 
     Color pixels[imageHeight * imageWidth];
@@ -46,7 +49,7 @@ int main()
             Ray curRay(cameraCenter, static_cast<Vec3>(curPixlPos - cameraCenter));
             
             uint64_t curRGB_Triplet = i * imageWidth + j; 
-            pixels[curRGB_Triplet] = rayColor(curRay);
+            pixels[curRGB_Triplet] = sphereIntersect(curRay);
         }
     }
 
@@ -96,5 +99,68 @@ void drawProgressBar(float percComplete)
 
 Color rayColor(const Ray& r)
 {
-    return Color(0, 0, 0);
+    // Create gradient based on y position from -1.0 to 1.0 going from blue to white
+    Color blue(0.5, 0.7, 1);
+    Color white(1, 1, 1);
+    
+    Point3 pos = unit_vector(r.origin() + r.direction());
+    double a = (pos.v[1] + 1) / 2;
+    Color out = (1 - a) * white + a * blue;
+
+    return out;
+}
+
+Color sphereIntersect(const Ray& r)
+{
+    // Check if the ray intersects with a sphere centered at (0, 0, -1)
+
+    Point3 c(0, 0, -1);
+    double rad = 0.5;
+
+    Point3 A = r.origin();
+    Point3 b = r.direction();
+    
+    double sqrt = pow((2 * dot(b, A - c)), 2)  - 4 * dot(b, b) * (dot(A - c, A - c) - rad * rad);
+    // Check if the square root of the quadratic formula is 0, < 0 or > 0
+    if (sqrt < -__DBL_EPSILON__)
+    {
+        // No solution therefore no contact, thus compute the blue gradient
+        return rayColor(r);
+    } 
+    else if (sqrt > __DBL_EPSILON__)
+    {
+        // 2 solutions therefore two contacts
+        sqrt = sqrtl(sqrt);
+
+        double sol_1 = ((- 2 * dot(b, A - c)) + sqrt) / (2 * dot(b, b));
+        double sol_2 = ((- 2 * dot(b, A - c)) - sqrt) / (2 * dot(b, b));
+
+        // We want the closer solution
+        if (sol_1 < sol_2)
+        {
+            Point3 hp = r.at(sol_1);
+            Point3 surfNorm = unit_vector((hp - c) / rad);
+
+            return Color(surfNorm.v[0], surfNorm.v[1], surfNorm.v[2]);
+        }
+        else
+        {
+            Point3 hp = r.at(sol_2);
+            Point3 surfNorm = unit_vector((hp - c) / rad);
+
+            return 0.5*Color(surfNorm.v[0] + 1, surfNorm.v[1] + 1, surfNorm.v[2] + 1);
+        }
+    }
+    else if (sqrt < __DBL_EPSILON__ && sqrt > __DBL_EPSILON__)
+    {
+        // One solution, just return red and put no extra computation here for now
+        double sol = (- 2 * dot(b, A - c)) / (2 * dot(b, b));
+
+        Point3 hp = r.at(sol);
+        Point3 surfNorm = unit_vector((hp - c) / rad);
+
+        return Color(surfNorm.v[0], surfNorm.v[1], surfNorm.v[2]);
+    }
+    
+
 }
