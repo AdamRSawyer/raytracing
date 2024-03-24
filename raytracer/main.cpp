@@ -120,7 +120,11 @@ Color sphereIntersect(const Ray& r)
     Point3 A = r.origin();
     Point3 b = r.direction();
     
-    double sqrt = pow((2 * dot(b, A - c)), 2)  - 4 * dot(b, b) * (dot(A - c, A - c) - rad * rad);
+    double quad_a = b.magnitude_sqrd();
+    double quad_b = dot(b, A - c);
+    double quad_c = (A - c).magnitude_sqrd() - rad * rad;
+
+    double sqrt = pow(quad_b, 2) - (quad_a * quad_c);
     // Check if the square root of the quadratic formula is 0, < 0 or > 0
     if (sqrt < -__DBL_EPSILON__)
     {
@@ -132,8 +136,8 @@ Color sphereIntersect(const Ray& r)
         // 2 solutions therefore two contacts
         sqrt = sqrtl(sqrt);
 
-        double sol_1 = ((- 2 * dot(b, A - c)) + sqrt) / (2 * dot(b, b));
-        double sol_2 = ((- 2 * dot(b, A - c)) - sqrt) / (2 * dot(b, b));
+        double sol_1 = (-quad_b + sqrt) / quad_a;
+        double sol_2 = (-quad_b - sqrt) / quad_a;
 
         // We want the closer solution
         if (sol_1 < sol_2)
@@ -154,13 +158,11 @@ Color sphereIntersect(const Ray& r)
     else if (sqrt < __DBL_EPSILON__ && sqrt > __DBL_EPSILON__)
     {
         // One solution, just return red and put no extra computation here for now
-        double sol = (- 2 * dot(b, A - c)) / (2 * dot(b, b));
+        double sol = (-quad_b + sqrt) / quad_a;
 
         Point3 hp = r.at(sol);
         Point3 surfNorm = unit_vector((hp - c) / rad);
 
         return Color(surfNorm.v[0], surfNorm.v[1], surfNorm.v[2]);
     }
-    
-
 }
