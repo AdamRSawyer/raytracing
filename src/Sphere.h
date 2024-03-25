@@ -10,7 +10,7 @@ class Sphere : public Hittable
     public:
         Sphere(Vec3 center, double radius) : center(center), radius(radius) {}
 
-        bool hit(const Ray& r, double ray_tmin, double ray_tmax, Hit_Record& rec) const override;
+        bool hit(const Ray& r, const Interval& ray_t, Hit_Record& rec) const override;
     private:
         Vec3 center;
         double radius;
@@ -18,7 +18,7 @@ class Sphere : public Hittable
 
 };
 
-bool Sphere::hit(const Ray&r, double ray_tmin, double ray_tmax, Hit_Record& rec) const
+bool Sphere::hit(const Ray&r, const Interval& ray_t, Hit_Record& rec) const
 {
     double quad_a = r.direction().magnitude_sqrd();
     double quad_b = dot(r.direction(), r.origin() - center); 
@@ -35,7 +35,7 @@ bool Sphere::hit(const Ray&r, double ray_tmin, double ray_tmax, Hit_Record& rec)
         double sol_1 = (- quad_b + det_sqrt) / quad_a;
         double sol_2 = (- quad_b - det_sqrt) / quad_a;
 
-        if (sol_1 <= sol_2 && sol_1 >= ray_tmin && sol_1 <= ray_tmax)
+        if (sol_1 <= sol_2 && ray_t.contains(sol_1))
         {
             rec.t = sol_1;
             rec.p = r.at(sol_1);
@@ -43,7 +43,7 @@ bool Sphere::hit(const Ray&r, double ray_tmin, double ray_tmax, Hit_Record& rec)
             
             return true;
         }
-        else if (sol_2 >= ray_tmin && sol_2 <= ray_tmax)
+        else if (ray_t.contains(sol_2))
         {
             rec.t = sol_2;
             rec.p = r.at(sol_2);
@@ -59,7 +59,7 @@ bool Sphere::hit(const Ray&r, double ray_tmin, double ray_tmax, Hit_Record& rec)
         double det_sqrt = sqrtl(determinant);
         double sol = (- quad_b + det_sqrt) / quad_a;
 
-        if (sol >= ray_tmin && sol <= ray_tmax)
+        if (sol >= ray_t.min && sol <= ray_t.max)
         {
             rec.t = sol;
             rec.p = r.at(sol);

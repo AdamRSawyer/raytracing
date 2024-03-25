@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "Hittable.h"
+#include "Interval.h"
 
 class Hittable_List : Hittable 
 {
@@ -18,15 +19,15 @@ class Hittable_List : Hittable
 
         void add(const std::shared_ptr<Hittable> objct) { objcts.push_back(objct); }
 
-        bool hit(const Ray&r, double ray_tmin, double ray_tmax, Hit_Record& rec) const override 
+        bool hit(const Ray&r, const Interval& ray_t, Hit_Record& rec) const override 
         {
             Hit_Record temp_recrd;
             bool hit_anything = false;
-            double closest = ray_tmax;
+            double closest = ray_t.max;
 
             for (const auto& objct : objcts)
             {
-                if (objct->hit(r, ray_tmin, closest, temp_recrd))
+                if (objct->hit(r, Interval(ray_t.min, closest), temp_recrd))
                 {
                     hit_anything = true;
                     closest = temp_recrd.t;

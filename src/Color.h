@@ -2,6 +2,7 @@
 #define COLOR_H
 
 #include "Vec3.h"
+#include "Interval.h"
 
 class Color : public Vec3
 {
@@ -11,32 +12,43 @@ class Color : public Vec3
         Color();
         ~Color();
 
-    Color& operator+=(const Color &add_p)
-    {
-        this->v[0] += add_p[0];
-        this->v[1] += add_p[1];
-        this->v[2] += add_p[2];
-        return *this;
-    }
+        Color& operator+=(const Color &add_p)
+        {
+            this->v[0] += add_p[0];
+            this->v[1] += add_p[1];
+            this->v[2] += add_p[2];
+            return *this;
+        }
 
-    Color operator-() const { return Color(-v[0], -v[1], -v[2]); }        
+        Color operator-() const { return Color(-v[0], -v[1], -v[2]); }        
 
-    Color& operator*=(const double d)
-    {
-        this->v[0] *= d;
-        this->v[1] *= d;
-        this->v[2] *= d;
-        return *this;
-    }
+        Color& operator*=(const double d)
+        {
+            this->v[0] *= d;
+            this->v[1] *= d;
+            this->v[2] *= d;
+            return *this;
+        }
 
-    Color& operator/=(const double d)
-    {
-        this->v[0] /= d;
-        this->v[1] /= d;
-        this->v[2] /= d;
-        return *this;
-    }
+        Color& operator/=(const double d)
+        {
+            this->v[0] /= d;
+            this->v[1] /= d;
+            this->v[2] /= d;
+            return *this;
+        }
+
+        Color& clrClamp()
+        {
+            this->v[0] = clrIntrv.clamp(this->v[0]);
+            this->v[1] = clrIntrv.clamp(this->v[1]);
+            this->v[2] = clrIntrv.clamp(this->v[2]);
+
+            return *this;
+        }
+
 };
+
 
 Color::Color(double r, double g, double b)
 {
