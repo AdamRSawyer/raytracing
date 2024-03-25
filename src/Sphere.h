@@ -5,13 +5,12 @@
 #include "Hittable.h"
 #include "Vec3.h"
 
-class Sphere : Hittable 
+class Sphere : public Hittable 
 {
     public:
         Sphere(Vec3 center, double radius) : center(center), radius(radius) {}
-        ~Sphere();
 
-        bool hit(const Ray& r, double ray_tmin, double ray_tmax, Hit_Record& rec) const;
+        bool hit(const Ray& r, double ray_tmin, double ray_tmax, Hit_Record& rec) const override;
     private:
         Vec3 center;
         double radius;
@@ -19,7 +18,7 @@ class Sphere : Hittable
 
 };
 
-bool Sphere::hit(const Ray&r, double ray_tmin, double ray_tmax, Hit_Record& rec) const 
+bool Sphere::hit(const Ray&r, double ray_tmin, double ray_tmax, Hit_Record& rec) const
 {
     double quad_a = r.direction().magnitude_sqrd();
     double quad_b = dot(r.direction(), r.origin() - center); 

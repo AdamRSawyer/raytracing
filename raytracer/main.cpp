@@ -4,14 +4,22 @@
 
 #include <iostream>
 #include <cmath>
+
 #include "Point3.h"
 #include "Color.h"
-#include "raytracer_Funcs.cpp"
 #include "Ray.h"
+#include "raytracer_Funcs.cpp"
+
+#include "Utility.h"
+#include "Hittable.h"
+#include "Hittable_List.h"
+#include "Sphere.h"
+
 
 
 void clearTerminal();
 void drawProgressBar(float percComplete);
+Color rayColor(const Ray& r, const Hittable_List& objcts);
 Color rayColor(const Ray& r);
 Color sphereIntersect(const Ray& r);
 
@@ -38,6 +46,10 @@ int main()
 
     Color pixels[imageHeight * imageWidth];
 
+    Hittable_List world(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
+    world.add(std::make_shared<Sphere>(Point3(0, 0, -1), 0.5));
+
+
     for (int i = 0; i < imageHeight; ++i)
     {
         clearTerminal();
@@ -49,7 +61,7 @@ int main()
             Ray curRay(cameraCenter, static_cast<Vec3>(curPixlPos - cameraCenter));
             
             uint64_t curRGB_Triplet = i * imageWidth + j; 
-            pixels[curRGB_Triplet] = sphereIntersect(curRay);
+            pixels[curRGB_Triplet] = rayColor(curRay, world);
         }
     }
 
@@ -97,6 +109,27 @@ void drawProgressBar(float percComplete)
     std::cout << progressBar << ' ' << percComplete * 100 << "%" << std::endl;
 }
 
+Color rayColor(const Ray& r, const Hittable_List& objcts)
+{
+    Hit_Record hr;
+    if(objcts.hit(r, 0, INF, hr))
+    {
+        Color out(hr.normal.v[0] + 1, hr.normal.v[1] + 1, hr.normal.v[2] + 1);
+        return 0.5 * out;
+    }
+
+    // Create gradient based on y position from -1.0 to 1.0 going from blue to white
+    Color blue(0.5, 0.7, 1);
+    Color white(1, 1, 1);
+    
+    Point3 pos = unit_vector(r.origin() + r.direction());
+    double a = (pos.v[1] + 1) / 2;
+    Color out = (1 - a) * white + a * blue;
+
+    return out;
+}
+
+// Just computes a blue-white gradient
 Color rayColor(const Ray& r)
 {
     // Create gradient based on y position from -1.0 to 1.0 going from blue to white
