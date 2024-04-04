@@ -5,15 +5,17 @@
 #include "Hittable.h"
 #include "Vec3.h"
 
+
 class Sphere : public Hittable 
 {
     public:
-        Sphere(Vec3 center, double radius) : center(center), radius(radius) {}
+        Sphere(Vec3 center, double radius, std::shared_ptr<Material> mat) : center(center), radius(radius), mat(mat) {}
 
         bool hit(const Ray& r, const Interval& ray_t, Hit_Record& rec) const override;
     private:
         Vec3 center;
         double radius;
+        std::shared_ptr<Material> mat;
 
 
 };
@@ -26,20 +28,21 @@ bool Sphere::hit(const Ray&r, const Interval& ray_t, Hit_Record& rec) const
 
     double determinant = (quad_b * quad_b) - (quad_a * quad_c);
 
-    if (determinant < -__DBL_EPSILON__)
+    if (determinant < 0.0)
         return false;
-    else if(determinant > __DBL_EPSILON__)
+    else if(determinant > 0.0)
     {
-        double det_sqrt = sqrtl(determinant);
+        double det_sqrt = sqrt(determinant);
 
-        double sol_1 = (- quad_b + det_sqrt) / quad_a;
-        double sol_2 = (- quad_b - det_sqrt) / quad_a;
+        double sol_1 = (- quad_b - det_sqrt) / quad_a;
+        double sol_2 = (- quad_b + det_sqrt) / quad_a;
 
         if (sol_1 <= sol_2 && ray_t.contains(sol_1))
         {
             rec.t = sol_1;
             rec.p = r.at(sol_1);
-            rec.set_face_normal(r, unit_vector(rec.p - center));
+            rec.set_face_normal(r, (rec.p - center) / radius);
+            rec.mat = mat;
             
             return true;
         }
@@ -47,7 +50,8 @@ bool Sphere::hit(const Ray&r, const Interval& ray_t, Hit_Record& rec) const
         {
             rec.t = sol_2;
             rec.p = r.at(sol_2);
-            rec.set_face_normal(r, unit_vector(rec.p - center));
+            rec.set_face_normal(r, (rec.p - center) / radius);
+            rec.mat = mat;
 
             return true;
         }
@@ -56,14 +60,15 @@ bool Sphere::hit(const Ray&r, const Interval& ray_t, Hit_Record& rec) const
     }
     else
     {
-        double det_sqrt = sqrtl(determinant);
-        double sol = (- quad_b + det_sqrt) / quad_a;
+        double det_sqrt = sqrt(determinant);
+        double sol = (- quad_b - det_sqrt) / quad_a;
 
-        if (sol >= ray_t.min && sol <= ray_t.max)
+        if (ray_t.contains(sol))
         {
             rec.t = sol;
             rec.p = r.at(sol);
-            rec.set_face_normal(r, unit_vector(rec.p - center));
+            rec.set_face_normal(r, (rec.p - center) / radius);
+            rec.mat = mat;
 
             return true;
         }

@@ -13,7 +13,7 @@ class Interval
         Interval(double min, double max) : min(min), max(max) {}
 
         bool contains(double x) const { return (x >= min && x <= max); }
-        bool surrounds(double x) const { return (x < min || x > max); }
+        bool surrounds(double x) const { return (x > min && x < max); }
 
         double clamp(double x) const
         {
@@ -28,6 +28,6 @@ class Interval
 
 const static Interval empty();
 const static Interval universe(-INF, INF);
-const static Interval clrIntrv(0.0, 1.0);
+const static Interval clrIntrv(0.000, 0.999);
 
 #endif

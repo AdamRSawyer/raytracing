@@ -47,6 +47,15 @@ class Color : public Vec3
             return *this;
         }
 
+        Color& linear_to_gamma()
+        {
+            this->v[0] = sqrt(this->v[0]);
+            this->v[1] = sqrt(this->v[1]);
+            this->v[2] = sqrt(this->v[2]);
+
+            return *this;
+        }
+
 };
 
 

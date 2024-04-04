@@ -4,12 +4,6 @@
 #include <limits>
 #include <cstdlib>
 
-#include "Vec3.h"
-#include "Color.h"
-#include "Point3.h"
-#include "Ray.h"
-#include "Interval.h"
-
 // Constants
 
 const double INF = std::numeric_limits<double>::infinity();
@@ -56,7 +50,7 @@ void drawProgressBar(float percComplete)
 
 double random_double() // produces double between 0.0 <= x < 1.0
 {
-    return (rand() / (RAND_MAX + 0.1));
+    return (rand() / (RAND_MAX + 1.0));
 }
 
 double random_double(double min, double max) 

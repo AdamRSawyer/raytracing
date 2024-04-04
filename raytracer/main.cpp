@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <memory>
 
 #include "Point3.h"
 #include "Color.h"
@@ -16,6 +17,9 @@
 #include "Sphere.h"
 #include "Interval.h"
 #include "Camera.h"
+#include "Lambertian.h"
+#include "Metal.h"
+#include "Dielectric.h"
 
 Color rayColor(const Ray& r, const Hittable_List& objcts);
 Color rayColor(const Ray& r);
@@ -46,8 +50,20 @@ int main()
 
     Color pixels[cam.imageHeight * cam.imageWidth];
 
-    Hittable_List world(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
-    world.add(std::make_shared<Sphere>(Point3(0, 0, -1), 0.5));
+    std::shared_ptr<Material> diffusePurple = std::make_shared<Lambertian>(Color(111 / 255.0, 94 / 255.0, 138 / 255.0));
+    std::shared_ptr<Material> diffuseGreen = std::make_shared<Lambertian>(Color(204 / 255.0, 204 / 255.0, 0.0));
+    std::shared_ptr<Material> diffuseOrange = std::make_shared<Lambertian>(Color(222 / 255.0, 133 / 255.0, 55 / 255.0));
+    std::shared_ptr<Material> roseMetal = std::make_shared<Metal>(Color(135 / 255.0, 11 / 255.0, 48 / 255.0), 0.25);
+    std::shared_ptr<Material> purpleMetal = std::make_shared<Metal>(Color(208 / 255.0, 15 / 255.0, 212 / 255.0), 0.5);
+    std::shared_ptr<Material> glass = std::make_shared<Dielectric>(1.5);
+
+
+    Hittable_List world(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100, diffuseGreen));
+    world.add(std::make_shared<Sphere>(Point3(0, 0, -1), 0.5, diffusePurple));
+    world.add(std::make_shared<Sphere>(Point3(-1, 0, -1), 0.5, glass));
+    world.add(std::make_shared<Sphere>(Point3(-1, 0, -1), -0.4, glass));
+    world.add(std::make_shared<Sphere>(Point3(1, 0, -1), 0.5, roseMetal));
+
 
     cam.Render(world, pixels);
 
